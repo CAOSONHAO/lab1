@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao Diện Đăng Ký Người Dùng</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f3;
+        }
+
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 15px 0;
+            text-align: center;
+            border-bottom: 5px solid #e67e22;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #35424a;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            border-color: #e67e22;
+            outline: none;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        input[type="submit"],
+        input[type="button"] {
+            background: #35424a;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        input[type="submit"]:hover,
+        input[type="button"]:hover {
+            background: #5a5a5a;
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #35424a;
+            color: #ffffff;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            margin-top: 20px;
+            border-top: 5px solid #e67e22;
+        }
+
+        #preview {
+            margin-top: 10px;
+            max-width: 100px;
+            display: none;
+            border-radius: 5px;
+        }
+
+        #registration_info {
+            margin-top: 20px;
+            border: 1px solid #35424a;
+            padding: 15px;
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #35424a;
+            color: white;
+        }
+    </style>
+    <script>
+        const accounts = []; // Mảng lưu trữ thông tin tài khoản
+
+        function setCurrentDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('created_at').value = today;
+            document.getElementById('updated_at').value = today;
+        }
+
+        function previewImage() {
+            const file = document.getElementById('profile_picture').files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const preview = document.getElementById('preview');
+                preview.src = event.target.result;
+                preview.style.display = 'block';
+            }
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function displayInfo(event) {
+            event.preventDefault(); // Ngăn gửi biểu mẫu
+
+            const username = document.getElementById('username').value;
+            const fullName = document.getElementById('full_name').value;
+            const email = document.getElementById('email').value;
+            const role = document.getElementById('role').value;
+
+            // Kiểm tra xem tất cả các trường đã được điền
+            if (username && fullName && email && role) {
+                const createdAt = document.getElementById('created_at').value;
+
+                // Thêm thông tin tài khoản vào mảng
+                accounts.push({ username, fullName, email, role, createdAt });
+
+                // Cập nhật bảng hiển thị tài khoản
+                updateAccountTable();
+
+                const infoDisplay = document.getElementById('info_display');
+                infoDisplay.innerHTML = `
+                    <strong>Tên người dùng:</strong> ${username}<br>
+                    <strong>Họ và tên:</strong> ${fullName}<br>
+                    <strong>Email:</strong> ${email}<br>
+                    <strong>Vai trò:</strong> ${role}<br>
+                    <strong>Ngày tạo tài khoản:</strong> ${createdAt}
+                `;
+
+                document.getElementById('registration_info').style.display = 'block'; // Hiện phần thông tin
+            } else {
+                alert("Vui lòng điền đầy đủ tất cả các thông tin!");
+            }
+        }
+
+        function updateAccountTable() {
+            const tableBody = document.getElementById('account_table_body');
+            tableBody.innerHTML = ''; // Xóa dữ liệu hiện có
+
+            accounts.forEach(account => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${account.username}</td>
+                    <td>${account.fullName}</td>
+                    <td>${account.email}</td>
+                    <td>${account.role}</td>
+                    <td>${account.createdAt}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+      
+        
+    </script>
+</head>
+<body onload="setCurrentDate()">
+
+<header>
+    <h1>Đăng Ký Người Dùng</h1>
+</header>
+
+<div class="container">
+    <form onsubmit="displayInfo(event)" enctype="multipart/form-data">
+        <h2>Đăng Ký</h2>
+        <label for="username">Tên người dùng:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="full_name">Họ và tên:</label>
+        <input type="text" id="full_name" name="full_name" required>
+
+        <label for="password">Mật khẩu:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="role">Vai trò:</label>
+        <select id="role" name="role" required>
+            <option value="">Chọn vai trò</option>
+            <option value="admin">Quản trị viên</option>
+            <option value="user">Người dùng</option>
+            <option value="moderator">Người điều hành</option>
+        </select>
+
+        <label for="profile_picture">Hình đại diện:</label>
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required onchange="previewImage()">
+
+        <img id="preview" alt="Hình đại diện" />
+
+        <label for="created_at">Ngày tạo tài khoản:</label>
+        <input type="text" id="created_at" name="created_at" readonly>
+
+        <label for="updated_at">Ngày cập nhật cuối cùng:</label>
+        <input type="text" id="updated_at" name="updated_at" readonly>
+
+        <input type="submit" value="Tạo tài khoản">
+        <input type="button" value="Hủy bỏ" onclick="window.location.href='/'">
+    </form>
+
+    <div id="registration_info">
+     
+    </div>
+
+    <h3>Các tài khoản đã tạo:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên người dùng</th>
+                <th>Họ và tên</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody id="account_table_body">
+            <!-- Dữ liệu tài khoản sẽ được thêm vào đây -->
+        </tbody>
+    </table>
+
+  
+
+
